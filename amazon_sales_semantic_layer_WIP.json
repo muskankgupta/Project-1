@@ -1,0 +1,123 @@
+{
+  "_status": "WORK IN PROGRESS — Weekly Report Snapshot",
+  "_note": "This file intentionally covers only the first half of the semantic layer. Business rules, derived flags, common-question mappings, and chatbot response guidelines are marked TODO and will be completed next sprint.",
+
+  "dataset": {
+    "name": "amazon_sale_report",
+    "description": "Line-item level Amazon.in order records for a clothing/apparel seller, covering orders placed between late March 2022 and June 2022. Each row is one SKU line within one order.",
+    "grain": "One row = one order line (one SKU quantity within one Order ID). An Order ID can appear on multiple rows if it contains multiple SKUs.",
+    "row_count": 128975,
+    "date_range": {"min": "2022-03-31", "max": "2022-06-29", "source_format": "MM-DD-YY"},
+    "primary_key": "Order ID + SKU (not strictly unique alone; treat 'index' as the row id)"
+  },
+
+  "fields": [
+    {
+      "name": "index",
+      "type": "integer",
+      "role": "row_id",
+      "description": "Row identifier, not a business key.",
+      "synonyms": ["row id", "row number"]
+    },
+    {
+      "name": "Order ID",
+      "type": "string",
+      "role": "dimension_id",
+      "description": "Amazon order identifier. One order can span several rows (one per SKU/item).",
+      "synonyms": ["order number", "order id", "order"]
+    },
+    {
+      "name": "Date",
+      "type": "date",
+      "format": "MM-DD-YY",
+      "role": "time_dimension",
+      "description": "Order date.",
+      "synonyms": ["order date", "date", "when the order was placed"]
+    },
+    {
+      "name": "Status",
+      "type": "categorical",
+      "role": "dimension",
+      "description": "Detailed order/shipment status as reported by Amazon.",
+      "synonyms": ["order status", "shipment status", "delivery status"],
+      "values": [
+        "Shipped", "Shipped - Delivered to Buyer", "Cancelled",
+        "Shipped - Returned to Seller", "Shipped - Picked Up", "Pending",
+        "Pending - Waiting for Pick Up", "Shipped - Returning to Seller",
+        "Shipped - Out for Delivery", "Shipped - Rejected by Buyer",
+        "Shipping", "Shipped - Lost in Transit", "Shipped - Damaged"
+      ],
+      "grouping_for_chatbot": {
+        "description": "When a user asks a broad question like 'how many orders were cancelled/delivered/returned', map to these buckets instead of exact string matches.",
+        "cancelled": ["Cancelled"],
+        "successfully_delivered": ["Shipped - Delivered to Buyer"],
+        "in_transit_or_shipped_generic": ["Shipped", "Shipped - Picked Up", "Shipped - Out for Delivery", "Shipping"],
+        "returned": ["Shipped - Returned to Seller", "Shipped - Returning to Seller"],
+        "pending": ["Pending", "Pending - Waiting for Pick Up"],
+        "failed_delivery": ["Shipped - Rejected by Buyer", "Shipped - Lost in Transit", "Shipped - Damaged"]
+      }
+    },
+    {
+      "name": "Fulfilment",
+      "type": "categorical",
+      "role": "dimension",
+      "description": "Who fulfilled the order.",
+      "synonyms": ["fulfillment type", "fulfilled by", "FBA or merchant"],
+      "values": {"Amazon": "Fulfilled by Amazon (FBA)", "Merchant": "Fulfilled by the seller/merchant (FBM)"}
+    },
+    {
+      "name": "Sales Channel ",
+      "type": "categorical",
+      "role": "dimension",
+      "note": "Column name in the raw file has a trailing space: 'Sales Channel '.",
+      "description": "Platform the order came through.",
+      "synonyms": ["channel", "sales channel", "platform"],
+      "values": ["Amazon.in", "Non-Amazon"]
+    },
+    {
+      "name": "ship-service-level",
+      "type": "categorical",
+      "role": "dimension",
+      "description": "Shipping speed tier.",
+      "synonyms": ["shipping speed", "shipping level", "delivery speed", "expedited or standard"],
+      "values": ["Expedited", "Standard"]
+    },
+    {
+      "name": "Style",
+      "type": "string",
+      "role": "dimension_id",
+      "description": "Style/design code, shared across sizes and color variants of the same product design (e.g. all sizes of style JNE3781 are one design).",
+      "synonyms": ["style code", "design code", "product design"]
+    },
+    {
+      "name": "SKU",
+      "type": "string",
+      "role": "dimension_id",
+      "description": "Stock keeping unit. Encodes style + color/variant + size, e.g. 'JNE3781-KR-XXXL' = style JNE3781, size XXXL.",
+      "synonyms": ["sku", "product code", "item code"]
+    },
+    {
+      "name": "Category",
+      "type": "categorical",
+      "role": "dimension",
+      "description": "Product category/garment type.",
+      "synonyms": ["product category", "garment type", "product type"],
+      "values": ["Set", "kurta", "Western Dress", "Top", "Ethnic Dress", "Blouse", "Bottom", "Saree", "Dupatta"],
+      "note": "Values are case-sensitive as stored ('kurta' lowercase, others capitalized). Chatbot should match case-insensitively."
+    }
+  ],
+
+  "_fields_todo_next_week": [
+    "Size", "ASIN", "Courier Status", "Qty", "currency", "Amount",
+    "ship-city", "ship-state", "ship-postal-code", "ship-country",
+    "promotion-ids", "B2B", "fulfilled-by", "Unnamed: 22"
+  ],
+
+  "business_rules": "TODO — not yet drafted",
+
+  "derived_flags": "TODO — not yet drafted",
+
+  "common_questions_to_query_map": "TODO — not yet drafted",
+
+  "chatbot_response_guidelines": "TODO — not yet drafted"
+}
