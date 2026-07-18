@@ -1,0 +1,39 @@
+==================================================
+AMAZON SALES DATA CLEANING REPORT
+==================================================
+
+Rows : 120378
+Columns : 23
+
+Duplicate Orders Removed : 8597
+Rows with Missing Order ID Removed : 0
+Invalid Dates Removed : 0
+Negative Quantity Rows : 0
+Negative Amount Rows : 0
+
+Missing Values
+----------------------------
+index                 0
+Order ID              0
+Date                  0
+Status                0
+Fulfilment            0
+Sales Channel         0
+ship-service-level    0
+Style                 0
+SKU                   0
+Category              0
+Size                  0
+ASIN                  0
+Courier Status        0
+Qty                   0
+currency              0
+Amount                0
+ship-city             0
+ship-state            0
+ship-postal-code      0
+ship-country          0
+promotion-ids         0
+B2B                   0
+fulfilled-by          0
+dtype: int64
