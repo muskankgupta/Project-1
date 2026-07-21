@@ -1,0 +1,6 @@
+MetricMind Project Log
+==================================================
+
+Step 1 : Dataset Loaded Successfully
+Step 2 : Dataset Inspected
+Step 3 : Summary Report Generated
