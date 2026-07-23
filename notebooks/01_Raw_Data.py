@@ -135,3 +135,6 @@ print("Project Log Created Successfully.")
 print("\n" + "=" * 50)
 print("Raw Data Loading Completed Successfully")
 print("=" * 50)
+
+# COMMAND ----------
+
