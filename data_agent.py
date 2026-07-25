@@ -1,16 +1,4 @@
-# class DataAgent:
-#     def __init__(self, data):
-#         self.data = data
 
-#     def run(self ,metric: str):
-#        if metric in self.data:
-#             return {
-#                 "status": "success",
-#                 "metric": metric,
-#                 "value" : self.data[metric]
-#             }
-#        return {
-#             "status": "error"}
 from config import get_connection
 from load_data import load_csv
 
@@ -45,23 +33,7 @@ class DataAgent:
 
        cursor.close()
        conn.close()
+       if result and isinstance(result[0], tuple):
+           return float(result[0][0])
 
        return result
-
-
-    # def execute_query(self, sql):
-
-    #     conn = get_connection()
-
-    #     cursor = conn.cursor()
-
-    #     cursor.execute(sql)
-
-    #     result = cursor.fetchall()
-
-
-    #     cursor.close()
-    #     conn.close()
-
-
-    #     return result

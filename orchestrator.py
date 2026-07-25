@@ -1,100 +1,112 @@
-# # from data_agent import DataAgent
-# # from paresr_agent import ParserAgent
-# # from state import State
-# # from data import Data
-# # class Orchestrator_Agent:
-# #     def __init__(self):
-# #         self.data_agent = DataAgent(Data)
-# #         self.parser_agent = ParserAgent()
-# #         self.state = State()
-# #     def run(self, user_input):
-# #         #step 1: find the quarter from the user input
-# #         parsed_data = self.parser_agent.run(user_input)
-# #         if "error" in parsed_data:
-# #             return {
-# #                 "status": "error",
-# #                 "value": "Invalid query"
-# #             }
-# #         print("Parsed Data:", parsed_data)
-# #         metric = parsed_data["metric"]
-# #         self.state.update("metric", metric)
-# #         #step 2: get the data from the data agent
-# #         result = self.data_agent.run(metric)
-# #         self.state.update("result", result)
-# #         return result
-# from parser_agent import ParserAgent
-# from data_agent import DataAgent
-# from config import Database
 
-# class Orchestrator:
-
-#     def __init__(self):
-#         self.parser_agent = ParserAgent()
-#         self.data_agent = DataAgent()
-#         self.db = Database()
-
-#     def run(self, query):
-#         # 1️⃣ Parse intent
-#         intent = self.parser_agent.parse_intent(query)
-#         print("\nParsed Intent:", intent)
-
-#         # 2️⃣ Generate SQL
-#         sql_query, params = self.data_agent.generate_query(intent)
-#         print("Generated Query:", sql_query)
-#         print("Query Parameters:", params)
-
-#         # 3️⃣ DB connection
-#         conn = self.db.connect()
-#         cursor = conn.cursor()
-
-#         # 4️⃣ Execute query
-#         cursor.execute(sql_query, params)
-#         result = cursor.fetchall()
-
-#         # 5️⃣ Close connection
-#         cursor.close()
-#         conn.close()
-
-#         # 6️⃣ Flatten result
-#         if result and isinstance(result[0], tuple):
-#             return result[0][0]
-
-#         return result
+from parser_agent import ParserAgent
 from query_agent import QueryAgent
 from data_agent import DataAgent
-from parser_agent import ResponseAgent
-
+from response_agent import ResponseAgent
+from validation_agent import ValidationAgent
+from memory import Memory
+from planner_agent import PlannerAgent
 
 
 class Orchestrator:
-
-
     def __init__(self):
-
+        self.parser_agent = ParserAgent()
         self.query_agent = QueryAgent()
         self.data_agent = DataAgent()
         self.response_agent = ResponseAgent()
+        self.validation_agent = ValidationAgent()
+        self.memory = Memory()
+        self.planner_agent = PlannerAgent()
+
+    def run(self, question: str):
+        try:
+            print(f"\n🧠 Question: {question}")
+
+            if self.planner_agent.requires_planning(question):
+                return self._handle_planned_query(question)
+
+            intent = self.parser_agent.parse(question)
+            print(f"🧩 Intent: {intent}")
+
+            sql = self.query_agent.generate_query(intent)
+
+            if not isinstance(sql, str):
+                return "❌ Failed to generate SQL query."
+
+            print(f"✅ SQL:\n{sql}")
+
+            if not self.validation_agent.validate(sql):
+                return "❌ SQL validation failed."
 
 
-
-    def run(self, question):
-
-
-        sql = self.query_agent.generate_sql(question)
+            result = self.data_agent.execute_query(sql)
+            print(f"📦 Result: {result}")
 
 
-        if sql is None:
-            return "I cannot understand your question"
+            self.memory.store({
+                "question": question,
+                "intent": intent,
+                "sql": sql,
+                "result": result
+            })
 
 
+            return self.response_agent.format_response(question, result)
 
-        result = self.data_agent.execute_query(sql)
-
-
-        answer = self.response_agent.format_response(
-            question,
-            result
-        )
+        except Exception as e:
+            return f"❌ Error: {str(e)}"
 
 
-        return answer
+    def _handle_planned_query(self, question):
+        print("🧠 Planner Agent Activated...")
+
+        # 1. Decompose query
+        steps = self.planner_agent.decompose(question)
+        print(f"📌 Plan: {steps}")
+
+        results = []
+
+        for step in steps:
+            print(f"\n🔹 Step: {step}")
+
+            # Parse
+            intent = self.parser_agent.parse(step)
+
+            # Generate SQL
+            sql = self.query_agent.generate_query(intent)
+
+            if not isinstance(sql, str):
+                return f"❌ Failed at step: {step}"
+
+            # Validate
+            if not self.validation_agent.validate(sql):
+                return f"❌ Invalid SQL at step: {step}"
+
+            # Execute
+            result = self.data_agent.execute_query(sql)
+
+            # Extract numeric value safely
+            value = self._extract_value(result)
+            results.append(value)
+
+            # Store each step in memory
+            self.memory.add({
+                "question": step,
+                "intent": intent,
+                "sql": sql,
+                "result": result
+            })
+
+        # 2. Let PlannerAgent combine results
+        final_answer = self.planner_agent.combine(question, steps, results)
+
+        return final_answer
+
+
+    def _extract_value(self, result):
+        try:
+            if result and result[0][0] is not None:
+                return float(result[0][0])
+        except:
+            pass
+        return 0.0

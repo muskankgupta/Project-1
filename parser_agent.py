@@ -1,54 +1,56 @@
-# class ParserAgent:
+import re
 
-#     def parse_intent(self, query):
-#         query = query.lower()
+class ParserAgent:
 
-#         # fix typo
-#         query = query.replace("quater", "quarter")
+    def parse(self, question: str) -> dict:
+        question = question.lower()
 
-#         aggregation = None
-#         column = None
-#         filters = {}
-
-#         # aggregation
-#         if "total" in query or "sum" in query:
-#             aggregation = "SUM"
-
-#         # column
-#         if "revenue" in query:
-#             column = "amount"
-
-#         # quarter detection
-#         if any(word in query for word in ["q1", "first quarter", "1st quarter"]):
-#             filters["quarter"] = 1
-#         elif any(word in query for word in ["q2", "second quarter", "2nd quarter"]):
-#             filters["quarter"] = 2
-#         elif any(word in query for word in ["q3", "third quarter", "3rd quarter"]):
-#             filters["quarter"] = 3
-#         elif any(word in query for word in ["q4", "fourth quarter", "4th quarter"]):
-#             filters["quarter"] = 4
-
-#         return {
-#             "aggregation": aggregation,
-#             "column": column,
-#             "filters": filters
-#         }
-
-class ResponseAgent:
+        intent = {
+            "aggregation": None,
+            "column": None,
+            "filters": {}
+        }
 
 
-    def format_response(self, question, result):
+        if any(word in question for word in ["total", "sum", "revenue"]):
+            intent["aggregation"] = "SUM"
 
+        elif any(word in question for word in ["average", "avg"]):
+            intent["aggregation"] = "AVG"
 
-        if result and result[0][0] is not None:
+        elif any(word in question for word in ["count", "number of", "how many"]):
+            intent["aggregation"] = "COUNT"
 
-            value = result[0][0]
+        if "revenue" in question or "sales" in question:
+            intent["column"] = "amount"
 
+        elif "orders" in question:
+            intent["column"] = "order_id"
 
-            return f"""
-Answer:
-The result for '{question}' is {value}.
-"""
+        elif "units" in question or "quantity" in question:
+            intent["column"] = "quantity"
 
+        quarter_match = re.search(r'q([1-4])', question)
+        if quarter_match:
+            intent["filters"]["quarter"] = int(quarter_match.group(1))
 
-        return "No data found."
+        year_match = re.search(r'(20\d{2})', question)
+        if year_match:
+            intent["filters"]["year"] = int(year_match.group(1))
+
+        if "state" in question:
+            # naive extraction (can improve later)
+            words = question.split()
+            if "in" in words:
+                idx = words.index("in")
+                if idx + 1 < len(words):
+                    intent["filters"]["state"] = words[idx + 1]
+
+        if "category" in question:
+            words = question.split()
+            if "in" in words:
+                idx = words.index("in")
+                if idx + 1 < len(words):
+                    intent["filters"]["category"] = words[idx + 1]
+
+        return intent

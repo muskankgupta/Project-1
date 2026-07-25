@@ -21,20 +21,10 @@
 #             print("\n❌ Error:", e)
 
 from orchestrator import Orchestrator
-
-
 agent = Orchestrator()
-
-
 while True:
-
     user_input = input("Enter query: ")
-
-
     if user_input == "exit":
         break
-
-
     response = agent.run(user_input)
-
     print(response)
