@@ -93,7 +93,7 @@ This notebook performs the following:
   - `location_dim`
   - `customer_dim`
 - Executes validation queries to verify data integrity
-- Prepares the Delta tables for the Semantic Layer and downstream AI applications
+- Prepares the Delta tables
 
 Tables Created:
 
