@@ -1,0 +1,6 @@
+# Core schema (semantics/schema.py, semantics/__init__.py) has NO dependencies.
+# pandas is only needed if you use semantics.load_dataset() / semantics/loader.py.
+pandas>=2.0
+
+# Only needed if this package's orchestrator/agent code calls Claude directly.
+# anthropic>=0.40
