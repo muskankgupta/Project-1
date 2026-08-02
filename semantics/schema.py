@@ -36,9 +36,12 @@ from datetime import date, timedelta
 from typing import Any, Optional
 
 
+
 # --------------------------------------------------------------------------
 # Field definitions
 # --------------------------------------------------------------------------
+
+
 
 @dataclass
 class FieldSpec:
@@ -52,10 +55,15 @@ class FieldSpec:
 
 
 FIELDS: dict[str, FieldSpec] = {
-    "Order ID": FieldSpec(
-        name="Order ID", dtype="string", role="dimension_id",
+    "Order_ID": FieldSpec(
+        name="Order_ID", dtype="string", role="dimension_id",
         description="Amazon order identifier. One order can span several rows (one per SKU/item).",
-        synonyms=["order number", "order id", "order"],
+        synonyms=[
+    "order",
+    "order id",
+    "order number",
+    "Order ID",
+]
     ),
     "Date": FieldSpec(
         name="Date", dtype="date", role="time_dimension",
@@ -65,7 +73,12 @@ FIELDS: dict[str, FieldSpec] = {
     "Status": FieldSpec(
         name="Status", dtype="categorical", role="dimension",
         description="Detailed order/shipment status.",
-        synonyms=["order status", "shipment status", "delivery status"],
+       synonyms=[
+    "status",
+    "order status",
+    "shipment status",
+    "delivery status",
+],
         values=[
             "Shipped", "Shipped - Delivered to Buyer", "Cancelled",
             "Shipped - Returned to Seller", "Shipped - Picked Up", "Pending",
@@ -73,22 +86,35 @@ FIELDS: dict[str, FieldSpec] = {
             "Shipped - Out for Delivery", "Shipped - Rejected by Buyer",
             "Shipping", "Shipped - Lost in Transit", "Shipped - Damaged",
         ],
+        
     ),
     "Fulfilment": FieldSpec(
         name="Fulfilment", dtype="categorical", role="dimension",
         description="Who fulfilled the order.",
-        synonyms=["fulfillment type", "fulfilled by", "FBA or merchant"],
+        synonyms=[
+    "fulfillment",
+    "fulfillment type",
+    "fulfilled by",
+    "FBA",
+    "FBM",
+    "FBA or merchant",
+],
         values={"Amazon": "Fulfilled by Amazon (FBA)", "Merchant": "Fulfilled by seller (FBM)"},
     ),
-    "Sales Channel ": FieldSpec(   # trailing space is real, from the raw CSV header
-        name="Sales Channel ", dtype="categorical", role="dimension",
-        description="Platform the order came through.",
-        synonyms=["channel", "sales channel", "platform"],
-        values=["Amazon.in", "Non-Amazon"],
-        notes="Column name has a trailing space in the raw CSV header.",
-    ),
-    "ship-service-level": FieldSpec(
-        name="ship-service-level", dtype="categorical", role="dimension",
+  "Sales_Channel": FieldSpec(
+    name="Sales_Channel",
+    dtype="categorical",
+    role="dimension",
+    description="Platform the order came through.",
+    synonyms=[
+        "channel",
+        "sales channel",
+        "platform",
+    ],
+    values=["Amazon.in", "Non-Amazon"],
+),
+    "ship_service_level": FieldSpec(
+        name="ship_service_level", dtype="categorical", role="dimension",
         description="Shipping speed tier.",
         synonyms=["shipping speed", "expedited or standard"],
         values=["Expedited", "Standard"],
@@ -106,23 +132,52 @@ FIELDS: dict[str, FieldSpec] = {
     "Category": FieldSpec(
         name="Category", dtype="categorical", role="dimension",
         description="Product category/garment type.",
-        synonyms=["product category", "garment type"],
-        values=["Set", "kurta", "Western Dress", "Top", "Ethnic Dress", "Blouse", "Bottom", "Saree", "Dupatta"],
+      synonyms=[
+        "category",
+        "categories",
+        "product category",
+        "product categories",
+        "garment type",
+        "product type",
+    ],
+       values=[
+    "Set",
+    "Kurta",
+    "Western Dress",
+    "Top",
+    "Ethnic Dress",
+    "Blouse",
+    "Bottom",
+    "Saree",
+    "Dupatta",
+],
         notes="Case-sensitive as stored ('kurta' lowercase); match case-insensitively.",
     ),
     "Size": FieldSpec(
         name="Size", dtype="categorical", role="dimension",
         description="Garment size.",
         synonyms=["size"],
-        values=["XS", "S", "M", "L", "XL", "XXL", "3XL", "4XL", "5XL", "6XL", "Free"],
+        values=[
+    "Xs",
+    "S",
+    "M",
+    "L",
+    "Xl",
+    "Xxl",
+    "3xl",
+    "4xl",
+    "5xl",
+    "6xl",
+    "Free",
+],
     ),
     "ASIN": FieldSpec(
         name="ASIN", dtype="string", role="dimension_id",
         description="Amazon-wide product identifier.",
         synonyms=["asin", "amazon product id"],
     ),
-    "Courier Status": FieldSpec(
-        name="Courier Status", dtype="categorical", role="dimension",
+    "Courier_Status": FieldSpec(
+        name="Courier_Status", dtype="categorical", role="dimension",
         description="Status from the courier/logistics side (distinct from order Status).",
         synonyms=["courier status", "carrier status"],
         values=["Shipped", "Unshipped", "Cancelled", None],
@@ -130,7 +185,13 @@ FIELDS: dict[str, FieldSpec] = {
     "Qty": FieldSpec(
         name="Qty", dtype="integer", role="measure",
         description="Units ordered on this line. 0 typically corresponds to Cancelled orders.",
-        synonyms=["quantity", "units", "units sold", "qty"],
+        synonyms=[
+    "qty",
+    "quantity",
+    "units",
+    "units sold",
+    "items sold",
+],
     ),
     "currency": FieldSpec(
         name="currency", dtype="categorical", role="dimension",
@@ -140,45 +201,69 @@ FIELDS: dict[str, FieldSpec] = {
     "Amount": FieldSpec(
         name="Amount", dtype="float", role="measure",
         description="Order line value in INR. Null for many cancelled orders.",
-        synonyms=["amount", "revenue", "sales", "price", "order value", "sale amount"],
+        synonyms=[
+    "amount",
+    "sales",
+    "revenue",
+    "gmv",
+    "price",
+    "income",
+    "sale amount",
+    "order value",
+],
         notes="SUM(Amount) is the default 'revenue' metric; see BUSINESS_RULES for cancelled-order handling.",
     ),
-    "ship-city": FieldSpec(
-        name="ship-city", dtype="string", role="dimension",
+    "ship_city": FieldSpec(
+        name="ship_city", dtype="string", role="dimension",
         description="Buyer's shipping city (free text, inconsistent casing).",
-        synonyms=["city", "shipping city", "delivery city"],
+        synonyms=["city","cities", "shipping city", "delivery city"],
     ),
-    "ship-state": FieldSpec(
-        name="ship-state", dtype="string", role="dimension",
+    "ship_state": FieldSpec(
+        name="ship_state", dtype="string", role="dimension",
         description="Buyer's shipping state. Messy: mixed case, abbreviations, misspellings, old names.",
-        synonyms=["state", "shipping state", "region"],
+        synonyms=["state","states", "shipping state", "region"],
         notes="Use normalize_state() before grouping/filtering -- see STATE_NORMALIZATION below.",
     ),
-    "ship-postal-code": FieldSpec(
-        name="ship-postal-code", dtype="float", role="dimension",
+    "ship_postal_code": FieldSpec(
+        name="ship_postal_code", dtype="float", role="dimension",
         description="Buyer's shipping postal/PIN code.",
         synonyms=["postal code", "pincode", "zip code"],
     ),
-    "ship-country": FieldSpec(
-        name="ship-country", dtype="categorical", role="dimension",
+    "ship_country": FieldSpec(
+        name="ship_country", dtype="categorical", role="dimension",
         description="Almost always 'IN' (India) when present.",
         synonyms=["country"], values=["IN", None],
     ),
-    "promotion-ids": FieldSpec(
-        name="promotion-ids", dtype="string", role="dimension",
+    "promotion_ids": FieldSpec(
+        name="promotion_ids", dtype="string", role="dimension",
         description="Raw promotion/discount identifiers; null if none applied (~62% of rows have one).",
-        synonyms=["promotion", "discount", "promo code"],
-        notes="Derive boolean has_promotion = promotion-ids is not null.",
+        synonyms=[
+    "promotion",
+    "promotion ids",
+    "promotion-ids",
+    "promo",
+    "promo code",
+    "discount",
+],
+        notes="Derive boolean has_promotion = promotion_ids is not null.",
     ),
     "B2B": FieldSpec(
         name="B2B", dtype="boolean", role="dimension",
         description="Whether the order was business-to-business (rare, ~0.7% of rows).",
         synonyms=["b2b", "business order", "wholesale"],
     ),
-    "fulfilled-by": FieldSpec(
-        name="fulfilled-by", dtype="categorical", role="dimension",
+    "fulfilled_by": FieldSpec(
+        name="fulfilled_by", dtype="categorical", role="dimension",
         description="Populated only for Merchant-fulfilled orders using Amazon's Easy Ship.",
-        synonyms=["easy ship", "fulfilled by"], values=["Easy Ship", None],
+        synonyms=[
+    "fulfilled by",
+    "fulfilled-by",
+    "easy ship",
+],
+values=[
+    "Easy Ship",
+    "Unknown",
+]
     ),
 }
 
@@ -205,6 +290,9 @@ STATE_NORMALIZATION: dict[str, str] = {
     "RJ": "Rajasthan", "RAJSHTHAN": "Rajasthan", "RAJSTHAN": "Rajasthan",
     "PB": "Punjab", "NL": "Nagaland", "AR": "Arunachal Pradesh",
     "ORISSA": "Odisha", "PONDICHERRY": "Puducherry", "NEW DELHI": "Delhi",
+    "mh": "Maharashtra", "MH": "Maharashtra", "TN": "Tamil Nadu",
+    "maharashtra": "Maharashtra", "tamil nadu": "Tamil Nadu",
+    "gj": "Gujarat", "gujarat": "Gujarat", "WB": "West Bengal", "west bengal": "West Bengal",
 }
 
 
@@ -281,138 +369,261 @@ UNANSWERABLE_TOPICS: list[str] = [
 # how to compute it, and any filters baked into its default meaning. Agents
 # should resolve a metric by name/synonym here rather than hand-rolling
 # formulas inline, so "revenue" always means the same thing everywhere.
+# ============================================================
+# Metric Specification
+# ============================================================
 
 @dataclass
 class MetricSpec:
-    name: str                          # canonical metric key
-    label: str                         # human-friendly display name
+    name: str
+    label: str
     description: str
-    formula: str                       # pseudo-SQL/pandas expression, for LLM + humans
-    base_fields: list[str]             # FIELDS this metric reads from
-    default_filters: list[str] = dc_field(default_factory=list)   # baked-in row filters
-    unit: Optional[str] = None         # "INR" | "count" | "ratio" | "percent" | None
-    synonyms: list[str] = dc_field(default_factory=list)
-    related_business_rule: Optional[str] = None   # key into BUSINESS_RULES
+    formula: str
+    base_fields: list[str]
+
+    table: str
+    schema: str
+    catalog: str
+
+    default_filters: Optional[list[str]] = None
+    synonyms: Optional[list[str]] = None
+    unit: Optional[str] = None
+    related_business_rule: Optional[str] = None
     notes: Optional[str] = None
 
+    def __post_init__(self):
+        if self.default_filters is None:
+            self.default_filters = []
+
+        if self.synonyms is None:
+            self.synonyms = []
+
+
+# ============================================================
+# Metrics
+# ============================================================
 
 METRICS: dict[str, MetricSpec] = {
+
     "revenue": MetricSpec(
-        name="revenue", label="Revenue",
-        description="Total sales value, excluding cancelled orders by default.",
-        formula="SUM(Amount) WHERE Status != 'Cancelled'",
+        name="revenue",
+        label="Revenue",
+        description="Total sales value excluding cancelled orders.",
+        formula="SUM(Amount)",
         base_fields=["Amount", "Status"],
+        table="amazon_sales_clean",
+        schema="default",
+        catalog="",
         default_filters=["Status != 'Cancelled'"],
         unit="INR",
-        synonyms=["sales", "gmv", "total sales", "revenue", "net revenue"],
+        synonyms=["sales", "gmv", "total sales", "revenue", "net revenue","order value"],
         related_business_rule="revenue_definition",
     ),
+
     "gross_revenue": MetricSpec(
-        name="gross_revenue", label="Gross / Booked Revenue",
-        description="Total sales value across all rows, including cancelled orders.",
+        name="gross_revenue",
+        label="Gross Revenue",
+        description="Total sales including cancelled orders.",
         formula="SUM(Amount)",
         base_fields=["Amount"],
+        table="amazon_sales_clean",
+        schema="default",
+        catalog="",
         unit="INR",
         synonyms=["gross sales", "booked revenue", "total booked amount"],
         related_business_rule="revenue_definition",
-        notes="Only use when the user explicitly asks to include cancelled orders.",
+        notes="Only use when user explicitly asks to include cancelled orders.",
     ),
+
     "units_sold": MetricSpec(
-        name="units_sold", label="Units Sold",
-        description="Total quantity of items sold.",
+        name="units_sold",
+        label="Units Sold",
+        description="Total quantity sold.",
         formula="SUM(Qty)",
         base_fields=["Qty"],
+        table="amazon_sales_clean",
+        schema="default",
+        catalog="",
         unit="count",
         synonyms=["units", "quantity sold", "items sold", "volume"],
         related_business_rule="unit_sales_definition",
     ),
+
     "order_count": MetricSpec(
-        name="order_count", label="Order Count",
-        description="Number of distinct orders (not order lines).",
-        formula="COUNT(DISTINCT 'Order ID')",
-        base_fields=["Order ID"],
+        name="order_count",
+        label="Order Count",
+        description="Number of distinct orders.",
+        formula="COUNT(DISTINCT Order_ID)",
+        base_fields=["Order_ID"],
+        table="amazon_sales_clean",
+        schema="default",
+        catalog="",
         unit="count",
         synonyms=["orders", "number of orders", "order volume"],
         related_business_rule="order_count_vs_line_count",
     ),
+
     "line_item_count": MetricSpec(
-        name="line_item_count", label="Line Item Count",
-        description="Number of order lines/rows (can exceed order_count; one order can have multiple SKUs).",
+        name="line_item_count",
+        label="Line Item Count",
+        description="Number of rows in the dataset.",
         formula="COUNT(*)",
-        base_fields=["Order ID"],
+        base_fields=["Order_ID"],
+        table="amazon_sales_clean",
+        schema="default",
+        catalog="",
         unit="count",
-        synonyms=["line items", "rows", "order lines"],
+        synonyms=["rows", "line items", "order lines"],
         related_business_rule="order_count_vs_line_count",
     ),
+
     "average_order_value": MetricSpec(
-        name="average_order_value", label="Average Order Value (AOV)",
-        description="Mean revenue per distinct order, over non-cancelled orders.",
-        formula="SUM(Amount WHERE Status != 'Cancelled') / COUNT(DISTINCT 'Order ID' WHERE Status != 'Cancelled')",
-        base_fields=["Amount", "Order ID", "Status"],
+        name="average_order_value",
+        label="Average Order Value",
+        description="Average revenue per order.",
+        formula="SUM(Amount) / COUNT(DISTINCT Order_ID)",
+        base_fields=["Amount", "Order_ID", "Status"],
+        table="amazon_sales_clean",
+        schema="default",
+        catalog="",
         default_filters=["Status != 'Cancelled'"],
         unit="INR",
-        synonyms=["aov", "avg order value", "average order size"],
+        synonyms=["aov", "average order value", "avg order value"],
         related_business_rule="average_order_value",
     ),
+
     "cancellation_rate": MetricSpec(
-        name="cancellation_rate", label="Cancellation Rate",
-        description="Share of orders that were cancelled.",
-        formula="COUNT(DISTINCT 'Order ID' WHERE Status == 'Cancelled') / COUNT(DISTINCT 'Order ID')",
-        base_fields=["Order ID", "Status"],
+        name="cancellation_rate",
+        label="Cancellation Rate",
+        description="Percentage of cancelled orders.",
+        formula="""
+COUNT(DISTINCT CASE
+    WHEN Status='Cancelled'
+    THEN Order_ID
+END)
+/
+COUNT(DISTINCT Order_ID)
+""",
+        base_fields=["Order_ID", "Status"],
+        table="amazon_sales_clean",
+        schema="default",
+        catalog="",
         unit="percent",
-        synonyms=["cancel rate", "% cancelled", "cancellation percentage"],
+        synonyms=["cancel rate", "cancel percentage", "% cancelled"],
         related_business_rule="cancellation_rate",
     ),
+
     "return_rate": MetricSpec(
-        name="return_rate", label="Return Rate",
-        description="Share of shipped orders that were returned to seller.",
-        formula=(
-            "COUNT(DISTINCT 'Order ID' WHERE Status in STATUS_GROUPS['returned']) / "
-            "COUNT(DISTINCT 'Order ID' WHERE Status LIKE 'Shipped%')"
-        ),
-        base_fields=["Order ID", "Status"],
+        name="return_rate",
+        label="Return Rate",
+        description="Percentage of returned shipped orders.",
+        formula="""
+COUNT(DISTINCT CASE
+    WHEN Status IN (
+        'Shipped - Returned to Seller',
+        'Shipped - Returning to Seller'
+    )
+    THEN Order_ID
+END)
+/
+COUNT(DISTINCT CASE
+    WHEN Status LIKE 'Shipped%'
+    THEN Order_ID
+END)
+""",
+        base_fields=["Order_ID", "Status"],
+        table="amazon_sales_clean",
+        schema="default",
+        catalog="",
         unit="percent",
-        synonyms=["returns rate", "% returned"],
+        synonyms=["return rate", "% returned"],
         related_business_rule="return_rate",
     ),
+
     "promotion_penetration": MetricSpec(
-        name="promotion_penetration", label="Promotion Penetration",
-        description="Share of order lines that had a promotion/discount applied.",
-        formula="COUNT(*) WHERE promotion-ids IS NOT NULL / COUNT(*)",
-        base_fields=["promotion-ids"],
+        name="promotion_penetration",
+        label="Promotion Penetration",
+        description="Percentage of orders having promotions.",
+        formula="""
+COUNT(CASE
+    WHEN promotion_ids IS NOT NULL
+         AND promotion_ids <> 'Unknown'
+    THEN 1
+END)
+/ COUNT(*)
+""",
+        base_fields=["promotion_ids"],
+        table="amazon_sales_clean",
+        schema="default",
+        catalog="",
         unit="percent",
-        synonyms=["promo rate", "% with promotion", "discount penetration"],
+        synonyms=["promo rate", "promotion rate", "discount penetration"],
     ),
+
     "b2b_share": MetricSpec(
-        name="b2b_share", label="B2B Share",
-        description="Share of order lines flagged as business-to-business.",
-        formula="COUNT(*) WHERE B2B == True / COUNT(*)",
+        name="b2b_share",
+        label="B2B Share",
+        description="Percentage of B2B orders.",
+        formula="""
+COUNT(CASE
+    WHEN B2B = TRUE
+    THEN 1
+END)
+/ COUNT(*)
+""",
         base_fields=["B2B"],
+        table="amazon_sales_clean",
+        schema="default",
+        catalog="",
         unit="percent",
         synonyms=["b2b percentage", "wholesale share"],
     ),
+
     "fba_share": MetricSpec(
-        name="fba_share", label="Fulfilled-by-Amazon Share",
-        description="Share of order lines fulfilled by Amazon (FBA) rather than the merchant.",
-        formula="COUNT(*) WHERE Fulfilment == 'Amazon' / COUNT(*)",
+        name="fba_share",
+        label="Fulfilled by Amazon Share",
+        description="Percentage of Amazon fulfilled orders.",
+        formula="""
+COUNT(CASE
+    WHEN Fulfilment='Amazon'
+    THEN 1
+END)
+/ COUNT(*)
+""",
         base_fields=["Fulfilment"],
+        table="amazon_sales_clean",
+        schema="default",
+        catalog="",
         unit="percent",
         synonyms=["fba percentage", "fba rate"],
     ),
 }
-
-
 def get_metric(name: str) -> Optional[MetricSpec]:
     """Look up a MetricSpec by its canonical key."""
     return METRICS.get(name)
 
 
-def resolve_metric_synonym(term: str) -> Optional[str]:
-    """Given a natural-language term (e.g. 'gmv', 'aov'), return the matching metric key, if any."""
-    term_l = term.strip().lower()
+def resolve_metric_synonym(text: str) -> Optional[str]:
+    """
+    Return the metric whose name/label/synonym appears anywhere
+    in the user's question.
+    """
+
+    text = text.lower()
+
     for key, spec in METRICS.items():
-        if term_l == key or term_l == spec.label.lower() or term_l in [s.lower() for s in spec.synonyms]:
-            return key
+
+        candidates = [
+            key,
+            spec.label,
+            *spec.synonyms,
+        ]
+
+        for candidate in candidates:
+
+            if candidate.lower() in text:
+                return key
+
     return None
 
 
