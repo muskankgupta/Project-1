@@ -1,0 +1,11 @@
+MetricMind Gold Layer Log
+============================================================
+
+Execution Time : 2026-07-31 17:37:47.217673
+
+Input Path : /Workspace/Users/bhilareomkar2006@gmail.com/MetricMind/lakehouse/silver/amazon_sales_clean
+Output Path : /Workspace/Users/bhilareomkar2006@gmail.com/MetricMind/lakehouse/gold/amazon_sales_metrics
+
+Total Orders : 128975.0
+Total Revenue : 83261883.3
+Average Order Value : 645.57

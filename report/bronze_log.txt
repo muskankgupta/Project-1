@@ -1,0 +1,37 @@
+MetricMind Bronze Layer Log
+============================================================
+
+Execution Time : 2026-08-01 14:49:16.007771
+
+Input File : /Workspace/Users/bhilareomkar2006@gmail.com/MetricMind/raw_data/Amazon Sale Report.csv
+Bronze Path : /Workspace/Users/bhilareomkar2006@gmail.com/MetricMind/lakehouse/bronze/amazon_sales
+
+Rows : 128975
+Columns : 24
+
+Column Names
+----------------------------------------
+index
+Order_ID
+Date
+Status
+Fulfilment
+Sales_Channel
+ship_service_level
+Style
+SKU
+Category
+Size
+ASIN
+Courier_Status
+Qty
+currency
+Amount
+ship_city
+ship_state
+ship_postal_code
+ship_country
+promotion_ids
+B2B
+fulfilled_by
+Unnamed_22
