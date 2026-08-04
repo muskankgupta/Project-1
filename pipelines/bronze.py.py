@@ -104,42 +104,7 @@
 #       .save(BRONZE_PATH)
 # )
 
-# print("Bronze Delta Table Created Successfully!")
 
-# with open(BRONZE_LOG, "w") as file:
-
-#     file.write("MetricMind Bronze Layer Log\n")
-#     file.write("=" * 60 + "\n\n")
-
-#     file.write(f"Execution Time : {datetime.now()}\n\n")
-
-#     file.write(f"Input File : {RAW_FILE}\n")
-#     file.write(f"Bronze Path : {BRONZE_PATH}\n\n")
-
-#     file.write(f"Rows : {rows}\n")
-#     file.write(f"Columns : {columns}\n\n")
-
-#     file.write("Column Names\n")
-#     file.write("-" * 40 + "\n")
-
-#     for column in df.columns:
-#         file.write(column + "\n")
-
-# print("Bronze Log Created Successfully!")
-
-# print("\nVerifying Bronze Delta Table...")
-
-# bronze_df = spark.read.format("delta").load(BRONZE_PATH)
-
-# bronze_df.show(10, truncate=False)
-
-# print("\nDataset Summary")
-# print("-" * 40)
-# print("Total Rows :", bronze_df.count())
-# print("Total Columns :", len(bronze_df.columns))
-
-# print("\nBronze Layer Completed Successfully")
-# print("=" * 60)
 # ============================================
 # METRICMIND - BRONZE LAYER (FINAL VERSION)
 # ============================================
