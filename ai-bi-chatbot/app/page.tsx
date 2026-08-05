@@ -14,7 +14,7 @@ export default function Home() {
       <div className="flex-1 flex flex-col">
 
         {/* Header */}
-        <header className="sticky top-0 z-50 border-b border-slate-800 bg-[#0b1220]/95 backdrop-blur-md">
+        <header className="sticky top-0 z-50 border-b border-blue-700 bg-blue-800 backdrop-blur-md">
   <div className="flex items-center justify-between px-8 py-2">
 
     <div>
