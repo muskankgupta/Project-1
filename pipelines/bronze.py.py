@@ -70,7 +70,6 @@
 # columns = len(df.columns)
 
 # print("\nDataset Shape")
-# print("-" * 40)
 # print("Rows :", rows)
 # print("Columns :", columns)
 
