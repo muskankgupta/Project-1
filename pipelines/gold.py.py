@@ -30,7 +30,7 @@
 # # --------------------------------------------
 # gold_df = df.groupBy("category").agg(
 #     _sum("amount").alias("total_revenue")
-# )
+#  )
 
 # # --------------------------------------------
 # # WRITE TO GOLD TABLE (UNITY CATALOG)
