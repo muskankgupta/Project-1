@@ -88,21 +88,7 @@
 # print("\nFirst 10 Records")
 # print("-" * 40)
 
-# df.show(10, truncate=False)
 
-# print("\nLast 10 Records")
-# print("-" * 40)
-
-# df.tail(10)
-
-# print("\nWriting Bronze Delta Table...")
-
-# (
-#     df.write
-#       .format("delta")
-#       .mode("overwrite")
-#       .save(BRONZE_PATH)
-# )
 
 
 # ============================================
