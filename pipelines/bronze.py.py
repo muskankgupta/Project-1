@@ -9,18 +9,6 @@
 
 # PROJECT_PATH = "/Workspace/Users/bhilareomkar2006@gmail.com/MetricMind"
 
-# RAW_FILE = os.path.join(
-#     PROJECT_PATH,
-#     "raw_data",
-#     "Amazon Sale Report.csv"
-# )
-
-# BRONZE_PATH = os.path.join(
-#     PROJECT_PATH,
-#     "lakehouse",
-#     "bronze",
-#     "amazon_sales"
-# )
 
 # REPORT_PATH = os.path.join(
 #     PROJECT_PATH,
