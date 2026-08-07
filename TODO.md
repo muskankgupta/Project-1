@@ -8,6 +8,7 @@
 - [x] Removed `OPENAI_API_KEY` from `env` — Gemini is now the sole configured LLM provider (verified: provider=gemini, model `gemini-flash-latest`)
 - [ ] Restore exact `DATABRICKS_SERVER_HOSTNAME` + `DATABRICKS_HTTP_PATH` (PAUSED — awaiting user values, do not fabricate). Current values present in `env` but hostname does NOT resolve via DNS (`gaierror [Errno 11001]` — network-level block, not a code/credential issue; `www.databricks.com` and `google.com` resolve fine from this machine)
 - [ ] Re-verify live Databricks + LLM after DNS/network access to `cloud.databricks.com` is available (blocked on above)
+- [x] Backend fail-fast on unreachable Databricks (`databricks_connection.py`): DNS pre-check + configurable connect/socket timeouts so `/query` & dashboard endpoints return a clean error in ~3s instead of hanging 90s+ (committed `522f05f`)
 
 ## Phase 1 — Dynamic Chatbot
 - [x] Backend robustness: no-metric queries return clean 200 error message (orchestrator.py + api_router.py)
