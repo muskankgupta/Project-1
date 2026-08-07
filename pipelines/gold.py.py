@@ -8,11 +8,11 @@
 # # --------------------------------------------
 # # CONFIG (DEFINE THIS FIRST — fixes cfg error)
 # # --------------------------------------------
-# cfg = {
-#     "catalog": "workspace",
-#     "schema": "default",
-#     "volume": "metricmind"
-# }
+# #cfg = {
+# #    "catalog": "workspace",
+# #    "schema": "default",
+# #    "volume": "metricmind"
+## }
 
 # # --------------------------------------------
 # # FULL TABLE PATHS
