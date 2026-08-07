@@ -4,9 +4,9 @@ from datetime import datetime
 from pyspark.sql.functions import *
 from pyspark.sql.types import IntegerType, DoubleType
 
-# ============================================
-# CONFIG (UNITY CATALOG)
-# ============================================
+### ============================================
+### CONFIG (UNITY CATALOG)
+### ============================================
 
 cfg = {
     "catalog": "workspace",
