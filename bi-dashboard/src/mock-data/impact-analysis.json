@@ -1,0 +1,34 @@
+{
+  "statuses": [
+    {
+      "id": "delivered",
+      "label": "Delivered Orders",
+      "orders": 18240,
+      "revenue": 2726000,
+      "orderShare": 92.8,
+      "revenueShare": 96.0,
+      "color": "#22d3ee"
+    },
+    {
+      "id": "cancelled",
+      "label": "Cancelled Orders",
+      "orders": 1420,
+      "revenue": 114000,
+      "orderShare": 7.2,
+      "revenueShare": 4.0,
+      "color": "#fb7185"
+    }
+  ],
+  "comparison": [
+    {
+      "label": "Delivered",
+      "orders": 18240,
+      "revenue": 2726000
+    },
+    {
+      "label": "Cancelled",
+      "orders": 1420,
+      "revenue": 114000
+    }
+  ]
+}

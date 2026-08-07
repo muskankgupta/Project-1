@@ -1,0 +1,439 @@
+{
+  "dataset": {
+    "name": "amazon_sale_report",
+    "description": "Line-item level Amazon.in order records for a clothing/apparel seller, covering orders placed between late March 2022 and June 2022. Each row is one SKU line within one order.",
+    "grain": "One row = one order line (one SKU quantity within one Order ID). An Order ID can appear on multiple rows if it contains multiple SKUs.",
+    "row_count": 128975,
+    "date_range": {"min": "2022-03-31", "max": "2022-06-29", "source_format": "MM-DD-YY"},
+    "primary_key": "Order ID + SKU (not strictly unique alone; treat 'index' as the row id)"
+  },
+
+  "fields": [
+    {
+      "name": "index",
+      "type": "integer",
+      "role": "row_id",
+      "description": "Row identifier, not a business key.",
+      "synonyms": ["row id", "row number"]
+    },
+    {
+      "name": "Order ID",
+      "type": "string",
+      "role": "dimension_id",
+      "description": "Amazon order identifier. One order can span several rows (one per SKU/item).",
+      "synonyms": ["order number", "order id"]
+    },
+    {
+      "name": "Date",
+      "type": "date",
+      "format": "MM-DD-YY",
+      "role": "time_dimension",
+      "description": "Order date.",
+      "synonyms": ["order date", "date", "when the order was placed"]
+    },
+    {
+      "name": "Status",
+      "type": "categorical",
+      "role": "dimension",
+      "description": "Detailed order/shipment status as reported by Amazon.",
+      "synonyms": ["order status", "shipment status", "delivery status"],
+      "values": [
+        "Shipped", "Shipped - Delivered to Buyer", "Cancelled",
+        "Shipped - Returned to Seller", "Shipped - Picked Up", "Pending",
+        "Pending - Waiting for Pick Up", "Shipped - Returning to Seller",
+        "Shipped - Out for Delivery", "Shipped - Rejected by Buyer",
+        "Shipping", "Shipped - Lost in Transit", "Shipped - Damaged"
+      ],
+      "grouping_for_chatbot": {
+        "description": "When a user asks a broad question like 'how many orders were cancelled/delivered/returned', map to these buckets instead of exact string matches.",
+        "cancelled": ["Cancelled"],
+        "successfully_delivered": ["Shipped - Delivered to Buyer"],
+        "in_transit_or_shipped_generic": ["Shipped", "Shipped - Picked Up", "Shipped - Out for Delivery", "Shipping"],
+        "returned": ["Shipped - Returned to Seller", "Shipped - Returning to Seller"],
+        "pending": ["Pending", "Pending - Waiting for Pick Up"],
+        "failed_delivery": ["Shipped - Rejected by Buyer", "Shipped - Lost in Transit", "Shipped - Damaged"]
+      }
+    },
+    {
+      "name": "Fulfilment",
+      "type": "categorical",
+      "role": "dimension",
+      "description": "Who fulfilled the order.",
+      "synonyms": ["fulfillment type", "fulfilled by", "FBA or merchant"],
+      "values": {"Amazon": "Fulfilled by Amazon (FBA)", "Merchant": "Fulfilled by the seller/merchant (FBM)"}
+    },
+    {
+      "name": "Sales Channel ",
+      "type": "categorical",
+      "role": "dimension",
+      "note": "Column name in the raw file has a trailing space: 'Sales Channel '.",
+      "description": "Platform the order came through.",
+      "synonyms": ["channel", "sales channel", "platform"],
+      "values": ["Amazon.in", "Non-Amazon"]
+    },
+    {
+      "name": "ship-service-level",
+      "type": "categorical",
+      "role": "dimension",
+      "description": "Shipping speed tier.",
+      "synonyms": ["shipping speed", "shipping level", "delivery speed", "expedited or standard"],
+      "values": ["Expedited", "Standard"]
+    },
+    {
+      "name": "Style",
+      "type": "string",
+      "role": "dimension_id",
+      "description": "Style/design code, shared across sizes and color variants of the same product design (e.g. all sizes of style JNE3781 are one design).",
+      "synonyms": ["style code", "design code", "product design"]
+    },
+    {
+      "name": "SKU",
+      "type": "string",
+      "role": "dimension_id",
+      "description": "Stock keeping unit. Encodes style + color/variant + size, e.g. 'JNE3781-KR-XXXL' = style JNE3781, size XXXL.",
+      "synonyms": ["sku", "product code", "item code"]
+    },
+    {
+      "name": "Category",
+      "type": "categorical",
+      "role": "dimension",
+      "description": "Product category/garment type.",
+      "synonyms": ["product category", "garment type", "product type"],
+      "values": ["Set", "kurta", "Western Dress", "Top", "Ethnic Dress", "Blouse", "Bottom", "Saree", "Dupatta"],
+      "note": "Values are case-sensitive as stored ('kurta' lowercase, others capitalized). Chatbot should match case-insensitively."
+    },
+    {
+      "name": "Size",
+      "type": "categorical",
+      "role": "dimension",
+      "description": "Garment size.",
+      "synonyms": ["size"],
+      "values": ["XS", "S", "M", "L", "XL", "XXL", "3XL", "4XL", "5XL", "6XL", "Free"],
+      "ordering": ["XS", "S", "M", "L", "XL", "XXL", "3XL", "4XL", "5XL", "6XL"]
+    },
+    {
+      "name": "ASIN",
+      "type": "string",
+      "role": "dimension_id",
+      "description": "Amazon Standard Identification Number, the Amazon-wide product identifier.",
+      "synonyms": ["asin", "amazon product id"]
+    },
+    {
+      "name": "Courier Status",
+      "type": "categorical",
+      "role": "dimension",
+      "description": "Status from the courier/logistics side (distinct from order Status).",
+      "synonyms": ["courier status", "shipping carrier status"],
+      "values": ["Shipped", "Unshipped", "Cancelled", null],
+      "null_meaning": "No courier assigned yet or not applicable (common for Cancelled orders)."
+    },
+    {
+      "name": "Qty",
+      "type": "integer",
+      "role": "measure",
+      "description": "Units ordered on this line. 0 typically corresponds to Cancelled orders.",
+      "synonyms": ["quantity", "units", "units sold", "qty"],
+      "aggregations": ["sum", "avg", "count"]
+    },
+    {
+      "name": "currency",
+      "type": "categorical",
+      "role": "dimension",
+      "description": "Currency of Amount. Effectively always INR when present; null for orders with no amount (mostly cancelled).",
+      "synonyms": ["currency"],
+      "values": ["INR", null]
+    },
+    {
+      "name": "Amount",
+      "type": "float",
+      "role": "measure",
+      "description": "Order line value in INR. Null for many cancelled orders.",
+      "synonyms": ["amount", "revenue", "sales", "price", "order value", "sale amount"],
+      "aggregations": ["sum", "avg", "min", "max", "count"],
+      "notes": "Sum(Amount) is the standard 'revenue' metric, but see business_rules.revenue_definition before including/excluding cancelled orders."
+    },
+    {
+      "name": "ship-city",
+      "type": "string",
+      "role": "dimension",
+      "description": "Buyer's shipping city (free text, ~8,955 distinct values, inconsistent casing).",
+      "synonyms": ["city", "shipping city", "delivery city"],
+      "normalization_note": "Compare case-insensitively; trim whitespace."
+    },
+    {
+      "name": "ship-state",
+      "type": "string",
+      "role": "dimension",
+      "description": "Buyer's shipping state. Messy/inconsistent: mixed case (e.g. 'Bihar' vs 'BIHAR' vs 'bihar'), abbreviations (e.g. 'RJ', 'PB', 'NL', 'AR'), misspellings ('Rajshthan', 'Rajsthan'), and old/alt names ('Orissa' -> Odisha, 'Pondicherry' -> Puducherry).",
+      "synonyms": ["state", "shipping state", "region"],
+      "normalization_map_example": {
+        "RJ": "Rajasthan", "Rajshthan": "Rajasthan", "Rajsthan": "Rajasthan", "rajasthan": "Rajasthan",
+        "PB": "Punjab", "punjab": "Punjab",
+        "NL": "Nagaland",
+        "AR": "Arunachal Pradesh", "Arunachal pradesh": "Arunachal Pradesh",
+        "Orissa": "Odisha", "orissa": "Odisha", "Odisha": "Odisha",
+        "Pondicherry": "Puducherry", "PUDUCHERRY": "Puducherry",
+        "New Delhi": "Delhi", "DELHI": "Delhi", "delhi": "Delhi",
+        "bihar": "Bihar", "BIHAR": "Bihar",
+        "goa": "Goa", "Goa": "Goa"
+      },
+      "instruction_for_chatbot": "Before grouping or filtering by state, uppercase-trim the value and apply the normalization map so variants of the same state are combined."
+    },
+    {
+      "name": "ship-postal-code",
+      "type": "float",
+      "role": "dimension",
+      "description": "Buyer's shipping postal/PIN code.",
+      "synonyms": ["postal code", "pincode", "zip code"]
+    },
+    {
+      "name": "ship-country",
+      "type": "categorical",
+      "role": "dimension",
+      "description": "Always 'IN' (India) when present.",
+      "synonyms": ["country"],
+      "values": ["IN", null]
+    },
+    {
+      "name": "promotion-ids",
+      "type": "string",
+      "role": "flag_source",
+      "description": "Raw list of promotion/discount identifiers applied to the order; null if no promotion applied. ~62% of rows have at least one promotion id.",
+      "synonyms": ["promotion", "discount", "promo code"],
+      "derived_flag": "has_promotion = promotion-ids is not null"
+    },
+    {
+      "name": "B2B",
+      "type": "boolean",
+      "role": "dimension",
+      "description": "Whether the order was business-to-business. Rare (~0.7% of rows).",
+      "synonyms": ["b2b", "business order", "wholesale"]
+    },
+    {
+      "name": "fulfilled-by",
+      "type": "categorical",
+      "role": "dimension",
+      "description": "Populated only for Merchant-fulfilled orders using Amazon's 'Easy Ship' program; null for Amazon-fulfilled orders.",
+      "synonyms": ["easy ship", "fulfilled by"],
+      "values": ["Easy Ship", null]
+    },
+    {
+      "name": "Unnamed: 22",
+      "type": "unused",
+      "role": "ignore",
+      "description": "Empty/unused trailing column from the source export. Exclude from all analysis and from the chatbot's answerable fields."
+    }
+  ],
+
+  "business_rules": {
+    "revenue_definition": "Default 'revenue' or 'sales' metric = SUM(Amount) over rows where Status is NOT 'Cancelled' (cancelled orders mostly have Amount/currency null or a nominal placeholder value and don't represent real sales). If the user explicitly asks for gross/booked revenue including cancellations, sum Amount over all rows instead and state that cancellations are included.",
+    "unit_sales_definition": "'Units sold' or 'quantity sold' = SUM(Qty). Qty is 0 for most cancelled rows, so this naturally excludes them; state this if asked.",
+    "order_count_vs_line_count": "Because one Order ID can have multiple SKU lines, COUNT(DISTINCT Order ID) = number of orders, while COUNT(*) or row count = number of order lines/items. Always clarify which one is being asked for ('how many orders' vs 'how many items').",
+    "cancellation_rate": "COUNT(DISTINCT Order ID WHERE Status = 'Cancelled') / COUNT(DISTINCT Order ID) overall.",
+    "return_rate": "COUNT(DISTINCT Order ID WHERE Status IN ('Shipped - Returned to Seller','Shipped - Returning to Seller')) / COUNT(DISTINCT Order ID WHERE Status LIKE 'Shipped%').",
+    "average_order_value": "SUM(Amount) / COUNT(DISTINCT Order ID), computed over non-cancelled orders unless stated otherwise.",
+    "missing_amount_currency": "Amount/currency are null on ~7,795 rows, overwhelmingly cancelled orders. Treat as 'no sale value', not zero, when averaging.",
+    "state_field_quality": "Always apply the ship-state normalization map (see fields.ship-state) before any state-level aggregation or 'top states' question, or results will double-count the same state under different spellings.",
+    "date_scope": "The dataset only covers ~3 months (Mar 31 - Jun 29, 2022). If a user asks about a period outside this range, say the data doesn't cover it rather than extrapolating."
+  },
+
+  "status_groups": {
+    "cancelled": ["Cancelled"],
+    "successfully_delivered": ["Shipped - Delivered to Buyer"],
+    "in_transit_or_shipped_generic": ["Shipped", "Shipped - Picked Up", "Shipped - Out for Delivery", "Shipping"],
+    "returned": ["Shipped - Returned to Seller", "Shipped - Returning to Seller"],
+    "pending": ["Pending", "Pending - Waiting for Pick Up"],
+    "failed_delivery": ["Shipped - Rejected by Buyer", "Shipped - Lost in Transit", "Shipped - Damaged"]
+  },
+
+  "metrics": {
+    "revenue": {
+      "label": "Revenue",
+      "description": "Total sales value excluding cancelled orders.",
+      "formula": "SUM(Amount)",
+      "base_fields": ["Amount", "Status"],
+      "table": "amazon_sales_clean",
+      "schema": "default",
+      "catalog": "",
+      "default_filters": ["Status != 'Cancelled'"],
+      "synonyms": ["sales", "gmv", "total sales", "revenue", "net revenue", "order value"],
+      "unit": "INR",
+      "related_business_rule": "revenue_definition"
+    },
+    "gross_revenue": {
+      "label": "Gross Revenue",
+      "description": "Total sales including cancelled orders.",
+      "formula": "SUM(Amount)",
+      "base_fields": ["Amount"],
+      "table": "amazon_sales_clean",
+      "schema": "default",
+      "catalog": "",
+      "synonyms": ["gross sales", "booked revenue", "total booked amount"],
+      "unit": "INR",
+      "related_business_rule": "revenue_definition",
+      "notes": "Only use when user explicitly asks to include cancelled orders."
+    },
+    "units_sold": {
+      "label": "Units Sold",
+      "description": "Total quantity sold.",
+      "formula": "SUM(Qty)",
+      "base_fields": ["Qty"],
+      "table": "amazon_sales_clean",
+      "schema": "default",
+      "catalog": "",
+      "synonyms": ["units", "quantity sold", "items sold", "volume"],
+      "unit": "count",
+      "related_business_rule": "unit_sales_definition"
+    },
+    "order_count": {
+      "label": "Order Count",
+      "description": "Number of distinct orders.",
+      "formula": "COUNT(DISTINCT `Order ID`)",
+      "base_fields": ["Order ID"],
+      "table": "amazon_sales_clean",
+      "schema": "default",
+      "catalog": "",
+      "synonyms": ["orders", "number of orders", "order volume"],
+      "unit": "count",
+      "related_business_rule": "order_count_vs_line_count"
+    },
+    "line_item_count": {
+      "label": "Line Item Count",
+      "description": "Number of rows in the dataset.",
+      "formula": "COUNT(*)",
+      "base_fields": ["Order ID"],
+      "table": "amazon_sales_clean",
+      "schema": "default",
+      "catalog": "",
+      "synonyms": ["rows", "line items", "order lines"],
+      "unit": "count",
+      "related_business_rule": "order_count_vs_line_count"
+    },
+    "average_order_value": {
+      "label": "Average Order Value",
+      "description": "Average revenue per order.",
+      "formula": "SUM(Amount) / COUNT(DISTINCT `Order ID`)",
+      "base_fields": ["Amount", "Order ID", "Status"],
+      "table": "amazon_sales_clean",
+      "schema": "default",
+      "catalog": "",
+      "default_filters": ["Status != 'Cancelled'"],
+      "synonyms": ["aov", "average order value", "avg order value"],
+      "unit": "INR",
+      "related_business_rule": "average_order_value"
+    },
+    "cancellation_rate": {
+      "label": "Cancellation Rate",
+      "description": "Percentage of cancelled orders.",
+      "formula": "COUNT(DISTINCT CASE WHEN Status='Cancelled' THEN `Order ID` END) / COUNT(DISTINCT `Order ID`)",
+      "base_fields": ["Order ID", "Status"],
+      "table": "amazon_sales_clean",
+      "schema": "default",
+      "catalog": "",
+      "synonyms": ["cancel rate", "cancel percentage", "% cancelled"],
+      "unit": "percent",
+      "related_business_rule": "cancellation_rate"
+    },
+    "return_rate": {
+      "label": "Return Rate",
+      "description": "Percentage of returned shipped orders.",
+      "formula": "COUNT(DISTINCT CASE WHEN Status IN ('Shipped - Returned to Seller', 'Shipped - Returning to Seller') THEN `Order ID` END) / COUNT(DISTINCT CASE WHEN Status LIKE 'Shipped%' THEN `Order ID` END)",
+      "base_fields": ["Order ID", "Status"],
+      "table": "amazon_sales_clean",
+      "schema": "default",
+      "catalog": "",
+      "synonyms": ["return rate", "% returned"],
+      "unit": "percent",
+      "related_business_rule": "return_rate"
+    },
+    "promotion_penetration": {
+      "label": "Promotion Penetration",
+      "description": "Percentage of orders having promotions.",
+      "formula": "COUNT(CASE WHEN `promotion-ids` IS NOT NULL AND `promotion-ids` <> 'Unknown' THEN 1 END) / COUNT(*)",
+      "base_fields": ["promotion-ids"],
+      "table": "amazon_sales_clean",
+      "schema": "default",
+      "catalog": "",
+      "synonyms": ["promo rate", "promotion rate", "discount penetration"],
+      "unit": "percent"
+    },
+    "b2b_share": {
+      "label": "B2B Share",
+      "description": "Percentage of B2B orders.",
+      "formula": "COUNT(CASE WHEN B2B = TRUE THEN 1 END) / COUNT(*)",
+      "base_fields": ["B2B"],
+      "table": "amazon_sales_clean",
+      "schema": "default",
+      "catalog": "",
+      "synonyms": ["b2b percentage", "wholesale share"],
+      "unit": "percent"
+    },
+    "fba_share": {
+      "label": "Fulfilled by Amazon Share",
+      "description": "Percentage of Amazon fulfilled orders.",
+      "formula": "COUNT(CASE WHEN Fulfilment='Amazon' THEN 1 END) / COUNT(*)",
+      "base_fields": ["Fulfilment"],
+      "table": "amazon_sales_clean",
+      "schema": "default",
+      "catalog": "",
+      "synonyms": ["fba percentage", "fba rate"],
+      "unit": "percent"
+    }
+  },
+
+  "derived_flags": {
+    "is_cancelled": "Status == 'Cancelled'",
+    "is_delivered": "Status == 'Shipped - Delivered to Buyer'",
+    "is_returned": "Status in ['Shipped - Returned to Seller', 'Shipped - Returning to Seller']",
+    "has_promotion": "promotion-ids is not null",
+    "is_fba": "Fulfilment == 'Amazon'",
+    "is_b2b": "B2B == True"
+  },
+
+  "common_questions_to_query_map": [
+    {
+      "user_asks": "What was total revenue / sales in [month]?",
+      "logic": "Filter Date to month, filter Status != 'Cancelled', SUM(Amount)."
+    },
+    {
+      "user_asks": "How many orders were cancelled?",
+      "logic": "COUNT(DISTINCT Order ID) WHERE Status == 'Cancelled'."
+    },
+    {
+      "user_asks": "What's the best-selling category / style / SKU?",
+      "logic": "GROUP BY Category (or Style/SKU), SUM(Qty) or SUM(Amount), ORDER BY desc, exclude Cancelled if measuring real sales."
+    },
+    {
+      "user_asks": "Which state/city sells the most?",
+      "logic": "Normalize ship-state first, then GROUP BY ship-state, SUM(Amount), exclude Cancelled."
+    },
+    {
+      "user_asks": "What size sells best for [category]?",
+      "logic": "Filter Category, GROUP BY Size, SUM(Qty)."
+    },
+    {
+      "user_asks": "What % of orders use Amazon fulfilment vs merchant?",
+      "logic": "COUNT(DISTINCT Order ID) GROUP BY Fulfilment, divide by total distinct orders."
+    },
+    {
+      "user_asks": "What's the average order value?",
+      "logic": "SUM(Amount) / COUNT(DISTINCT Order ID) WHERE Status != 'Cancelled'."
+    },
+    {
+      "user_asks": "How many orders had a promotion applied?",
+      "logic": "COUNT(DISTINCT Order ID) WHERE promotion-ids IS NOT NULL."
+    },
+    {
+      "user_asks": "How many B2B orders were there?",
+      "logic": "COUNT(DISTINCT Order ID) WHERE B2B == True."
+    }
+  ],
+
+  "chatbot_response_guidelines": {
+    "always_state_scope": "When answering, mention the time window covered (Mar 31-Jun 29, 2022) if the user's question could imply a longer period.",
+    "clarify_orders_vs_lines": "If ambiguous, default to 'orders' (distinct Order ID) for counts, and clarify Amount/Qty are summed at the line level.",
+    "clarify_cancelled_handling": "When reporting revenue/sales figures, briefly note whether cancelled orders were excluded.",
+    "no_pii_beyond_dataset": "Only ship-city/state/postal-code/country are available; no customer names, emails, or payment details exist in this dataset -- do not imply otherwise.",
+    "unanswerable_examples": ["Profit margin or cost data (not in dataset)", "Customer identity/repeat-customer analysis (no customer ID field)", "Data outside Mar-Jun 2022"]
+  }
+}

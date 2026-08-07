@@ -1,0 +1,96 @@
+@import "tailwindcss";
+
+/* ============================================================
+   Theme variables
+   Defaults are dark-first. `.light` / `[data-theme="light"]`
+   override surfaces and text for the high-contrast appearance.
+   ============================================================ */
+
+:root,
+:root[data-theme="dark"] {
+  --background: #050816;
+  --foreground: #f5f7fb;
+  --card-bg: rgba(255, 255, 255, 0.05);
+  --card-border: rgba(255, 255, 255, 0.1);
+  --muted: #94a3b8;
+  --accent: #22d3ee;
+}
+
+:root[data-theme="light"] {
+  --background: #f2f5fb;
+  --foreground: #0b1220;
+  --card-bg: rgba(255, 255, 255, 0.85);
+  --card-border: rgba(11, 18, 32, 0.08);
+  --muted: #475569;
+  --accent: #0e7490;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-accent: var(--accent);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+  background-image:
+    radial-gradient(circle at top left, rgba(14, 165, 233, 0.16), transparent 32%),
+    radial-gradient(circle at top right, rgba(59, 130, 246, 0.14), transparent 28%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 24%);
+  transition:
+    background-color 0.4s ease,
+    color 0.4s ease;
+}
+
+:root[data-theme="light"] body {
+  background-image:
+    radial-gradient(circle at top left, rgba(14, 165, 233, 0.14), transparent 32%),
+    radial-gradient(circle at top right, rgba(59, 130, 246, 0.1), transparent 28%),
+    linear-gradient(180deg, rgba(14, 165, 233, 0.04), transparent 24%);
+}
+
+::selection {
+  background: rgba(56, 189, 248, 0.35);
+  color: white;
+}
+
+/* Smooth theme transitions for interactive surfaces */
+.theme-transition,
+.theme-transition * {
+  transition:
+    background-color 0.35s ease,
+    border-color 0.35s ease,
+    color 0.35s ease,
+    box-shadow 0.35s ease;
+}
+
+/* Custom scrollbar (subtle, theme-aware) */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.35);
+  border-radius: 9999px;
+  border: 2px solid var(--background);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.55);
+}
+

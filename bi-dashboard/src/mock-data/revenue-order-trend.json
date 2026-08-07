@@ -1,0 +1,9 @@
+[
+  { "period": "Jan", "revenue": 285000, "orders": 1820 },
+  { "period": "Feb", "revenue": 301000, "orders": 1890 },
+  { "period": "Mar", "revenue": 317000, "orders": 2015 },
+  { "period": "Apr", "revenue": 332000, "orders": 2094 },
+  { "period": "May", "revenue": 348000, "orders": 2168 },
+  { "period": "Jun", "revenue": 361000, "orders": 2246 },
+  { "period": "Jul", "revenue": 378000, "orders": 2318 }
+]
