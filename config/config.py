@@ -1,6 +1,6 @@
 # config/config.py
 
-# Base volume path (Databricks Unity Catalog)
+# Base volume path (Databricks Unity Catalog)  
 BASE_PATH = "/Volumes/workspace/default/metricmind"
 
 # Bronze Layer
