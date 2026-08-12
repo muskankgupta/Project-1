@@ -1,7 +1,7 @@
 MetricMind Bronze Layer Log
 ============================================================
 
-Execution Time : 2026-08-01 14:49:16.007771
+Execution Time : 2026-08-01 14:49:16.007771  
 
 Input File : /Workspace/Users/bhilareomkar2006@gmail.com/MetricMind/raw_data/Amazon Sale Report.csv
 Bronze Path : /Workspace/Users/bhilareomkar2006@gmail.com/MetricMind/lakehouse/bronze/amazon_sales
