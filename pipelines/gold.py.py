@@ -6,7 +6,7 @@
 # from pyspark.sql.functions import sum as _sum
 
 # # --------------------------------------------
-# # CONFIG (DEFINE THIS FIRST — fixes cfg error)
+# # CONFIG (DEFINE THIS FIRST — fixes cf g error)
 # # ---------------------------------------------
 # #cfg = {
 # #    "catalog": "workspace",
