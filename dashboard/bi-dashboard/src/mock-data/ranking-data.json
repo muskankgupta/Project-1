@@ -1,0 +1,54 @@
+{
+  "topPerformers": [
+    {
+      "id": "top-1",
+      "name": "Amazon Basics Wireless Mouse",
+      "category": "Electronics",
+      "value": 182400,
+      "change": 18.4,
+      "share": 6.4
+    },
+    {
+      "id": "top-2",
+      "name": "Echo Flex Smart Plug Bundle",
+      "category": "Home Automation",
+      "value": 164800,
+      "change": 14.9,
+      "share": 5.8
+    },
+    {
+      "id": "top-3",
+      "name": "Kitchen Essentials Set",
+      "category": "Home & Kitchen",
+      "value": 151200,
+      "change": 11.7,
+      "share": 5.3
+    }
+  ],
+  "worstPerformers": [
+    {
+      "id": "worst-1",
+      "name": "Legacy HDMI Adapter Kit",
+      "category": "Accessories",
+      "value": 18400,
+      "change": -22.1,
+      "share": 0.6
+    },
+    {
+      "id": "worst-2",
+      "name": "Office Label Printer Roll",
+      "category": "Office Supplies",
+      "value": 21600,
+      "change": -16.8,
+      "share": 0.8
+    },
+    {
+      "id": "worst-3",
+      "name": "Seasonal Decor Pack",
+      "category": "Seasonal",
+      "value": 24900,
+      "change": -12.3,
+      "share": 0.9
+    }
+  ]
+}

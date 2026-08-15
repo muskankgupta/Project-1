@@ -1,0 +1,34 @@
+[
+  {
+    "id": "total-revenue",
+    "label": "Total Revenue",
+    "value": 2840000,
+    "format": "currency",
+    "delta": 14.8,
+    "trend": "up"
+  },
+  {
+    "id": "total-orders",
+    "label": "Total Orders",
+    "value": 19660,
+    "format": "number",
+    "delta": 8.2,
+    "trend": "up"
+  },
+  {
+    "id": "units-sold",
+    "label": "Units Sold",
+    "value": 68420,
+    "format": "number",
+    "delta": 11.6,
+    "trend": "up"
+  },
+  {
+    "id": "average-order-value",
+    "label": "Average Order Value",
+    "value": 144.46,
+    "format": "currency",
+    "delta": 5.4,
+    "trend": "up"
+  }
+]

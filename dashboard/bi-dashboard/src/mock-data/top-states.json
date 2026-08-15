@@ -1,0 +1,7 @@
+[
+  { "id": "state-ca", "state": "California", "sales": 624000, "orders": 4210, "share": 21.9 },
+  { "id": "state-tx", "state": "Texas", "sales": 502000, "orders": 3620, "share": 17.6 },
+  { "id": "state-ny", "state": "New York", "sales": 446000, "orders": 3190, "share": 15.7 },
+  { "id": "state-fl", "state": "Florida", "sales": 372000, "orders": 2810, "share": 13.1 },
+  { "id": "state-wa", "state": "Washington", "sales": 318000, "orders": 2330, "share": 11.2 }
+]

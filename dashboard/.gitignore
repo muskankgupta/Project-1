@@ -1,0 +1,65 @@
+# ============================================================
+# MetricMind — Root .gitignore
+# Protect secrets, credentials, logs, temp files, and caches.
+# ============================================================
+
+# --- Secrets / credentials (NEVER commit) ---
+.env
+env
+.env.*
+*.env
+*.pem
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+*.so
+
+# --- Virtual environments ---
+.venv/
+venv/
+env/
+ENV/
+
+# --- Logs ---
+*.log
+backend_out.log
+backend_err.log
+frontend_out.log
+frontend_build.log
+
+# --- Temporary / probe / scratch scripts ---
+_tmp/
+_tmp*
+_probe*
+_verify*
+_*verify*
+_*probe*
+_final_verify.py
+probe_result*.txt
+probe*.txt
+temp/
+scratch/
+*.tmp
+
+# --- OS / editor ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# --- Node / Next (bi-dashboard) ---
+node_modules/
+.next/
+out/
+/coverage
+
+# --- Data files (large / sensitive) ---
+*.xlsx
+*.csv
+*.pdf
+</content>
